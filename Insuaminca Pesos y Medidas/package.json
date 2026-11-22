@@ -1,0 +1,19 @@
+{
+  "name": "insuaminca-medidas-apk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Paquete compilado de INSUAMINCA Control de Medidas y Pesos para generar APK Android",
+  "scripts": {
+    "apk:patch": "node scripts/patch-android.mjs",
+    "apk:prepare": "npx cap sync android && node scripts/patch-android.mjs",
+    "apk:build": "npm run apk:prepare && cd android && ./gradlew assembleDebug --no-daemon",
+    "apk:release": "npm run apk:prepare && cd android && ./gradlew assembleRelease --no-daemon"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  }
+}

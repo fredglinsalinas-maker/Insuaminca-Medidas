@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <script>
+      /**
+       * Ensure window.fetch has both a getter and a setter so browser extensions,
+       * devtools interceptors, and automation scripts can assign to window.fetch
+       * without throwing "TypeError: Cannot set property fetch of #<Window> which has only a getter".
+       */
+      (function () {
+        try {
+          var originalFetch = window.fetch;
+          var currentFetch = typeof originalFetch === 'function' ? originalFetch : null;
+          Object.defineProperty(window, 'fetch', {
+            configurable: true,
+            enumerable: true,
+            get: function () {
+              return currentFetch;
+            },
+            set: function (fn) {
+              currentFetch = fn;
+            },
+          });
+        } catch (e) {
+          // fallback if already non-configurable
+        }
+
+        // Prevent external Chrome extension errors and disabled-HMR Vite WebSocket noise from bubbling up
+        window.addEventListener(
+          'error',
+          function (e) {
+            if (
+              (e.filename && e.filename.indexOf('chrome-extension://') !== -1) ||
+              (e.message && e.message.indexOf('Cannot set property fetch') !== -1) ||
+              (e.message &&
+                e.message.indexOf('WebSocket closed without opened') !== -1 &&
+                (!e.filename || e.filename.indexOf('@vite/client') !== -1))
+            ) {
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              return true;
+            }
+          },
+          true
+        );
+
+        window.addEventListener(
+          'unhandledrejection',
+          function (e) {
+            var reason = e.reason;
+            var stack = (reason && reason.stack) || '';
+            var msg = (reason && reason.message) || String(reason || '');
+            if (
+              stack.indexOf('chrome-extension://') !== -1 ||
+              msg.indexOf('Cannot set property fetch') !== -1 ||
+              (msg.indexOf('WebSocket closed without opened') !== -1 &&
+                (stack.indexOf('@vite/client') !== -1 || stack.indexOf('vite') !== -1))
+            ) {
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              return true;
+            }
+          },
+          true
+        );
+      })();
+
+      /**
+       * Early PWA install prompt capture so fast-loading apps never miss beforeinstallprompt
+       * before React mounts or lazy modals open.
+       */
+      (function () {
+        window.__deferredPWAInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', function (e) {
+          e.preventDefault();
+          window.__deferredPWAInstallPrompt = e;
+          window.dispatchEvent(new CustomEvent('insuaminca-pwa-prompt-ready'));
+        });
+        window.addEventListener('appinstalled', function () {
+          window.__deferredPWAInstallPrompt = null;
+          window.dispatchEvent(new CustomEvent('insuaminca-pwa-installed'));
+        });
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <style>html,body{background-color:#f8fafc;width:100%;margin:0;padding:0;font-family:Plus Jakarta Sans,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;position:relative;overflow-x:hidden}#app-skeleton{background-color:#f8fafc;flex-direction:column;min-height:100vh;display:flex}.skeleton-header{color:#fff;background-color:#074e2b;justify-content:space-between;align-items:center;height:64px;padding:0 16px;display:flex}.skeleton-brand{align-items:center;gap:12px;display:flex}.skeleton-logo-wrap{background-color:#fff;border-radius:10px;justify-content:center;align-items:center;padding:4px 10px;display:flex;box-shadow:0 1px 2px #0000001f}.skeleton-logo-img{object-fit:contain;width:auto;max-width:140px;height:30px;display:block}.skeleton-spinner-container{text-align:center;flex-direction:column;flex:1;justify-content:center;align-items:center;padding:40px 20px;display:flex}.skeleton-spinner{border:4px solid #e2e8f0;border-top-color:#074e2b;border-radius:50%;width:42px;height:42px;margin-bottom:16px;animation:.8s linear infinite spin}@keyframes spin{to{transform:rotate(360deg)}}.skeleton-title{color:#0f172a;margin-bottom:6px;font-size:16px;font-weight:700}.skeleton-sub{color:#64748b;font-size:12px}</style>
+    <title>Control de Medidas y Pesos - INSUAMINCA</title>
+    <meta name="description" content="Sistema profesional de control, registro y validación de medidas y pesos para inventario y logística." />
+    
+    <!-- OpenGraph / Facebook / WhatsApp Social Share Card -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="INSUAMINCA" />
+    <meta property="og:title" content="Control de Medidas y Pesos - INSUAMINCA" />
+    <meta property="og:description" content="Sistema profesional de control, registro y validación de medidas y pesos para inventario y logística." />
+    <meta property="og:image" content="/og-cover.jpg" />
+    <meta property="og:image:secure_url" content="/og-cover.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="675" />
+    <meta property="og:image:alt" content="INSUAMINCA - Control de Medidas y Pesos - Fredglin Salinas" />
+
+    <!-- Twitter / X Social Share Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Control de Medidas y Pesos - INSUAMINCA" />
+    <meta name="twitter:description" content="Sistema profesional de control, registro y validación de medidas y pesos para inventario y logística." />
+    <meta name="twitter:image" content="/og-cover.jpg" />
+
+    <!-- PWA & Mobile Web Specs -->
+    <meta name="theme-color" content="#074E2B" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="MedidasINSUA" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "INSUAMINCA - Control de Medidas y Pesos",
+        "shortName": "MedidasINSUA",
+        "description": "Sistema profesional de control, registro y validación de medidas y pesos para inventario y logística.",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All",
+        "author": {
+          "@type": "Person",
+          "name": "Fredglin Salinas"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+    <script type="module" crossorigin src="/assets/index-DfN8MCWO.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-XKyaHtl9.js">
+    <link rel="modulepreload" crossorigin href="/assets/lucide-Cmf6sB39.js">
+    <link rel="modulepreload" crossorigin href="/assets/recharts-C_3kUizJ.js">
+    <link rel="modulepreload" crossorigin href="/assets/homeAnalytics-CgB7XYWe.js">
+    <link rel="modulepreload" crossorigin href="/assets/jspdf-eZRQzrVi.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-Cp-gC0ga.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body class="bg-slate-50 text-slate-900 antialiased min-h-screen selection:bg-emerald-100 selection:text-emerald-900 font-['Plus_Jakarta_Sans',sans-serif]">
+    <div id="root">
+      <!-- Instant 0ms Shell for Shared Link & Web Access -->
+      <div id="app-skeleton">
+        <header class="skeleton-header">
+          <div class="skeleton-brand">
+            <div class="skeleton-logo-wrap">
+              <img
+                src="/assets/aistudio/insuaminca-logo_32074863.png"
+                alt="INSUAMINCA"
+                class="skeleton-logo-img"
+              />
+            </div>
+          </div>
+        </header>
+        <main class="skeleton-spinner-container">
+          <div class="skeleton-spinner"></div>
+          <div class="skeleton-title">Cargando INSUAMINCA...</div>
+          <div class="skeleton-sub">Sistema de Control de Medidas y Pesos</div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+====================================================================
+  INSUAMINCA - CONTROL DE MEDIDAS Y PESOS
+  PAQUETE COMPILADO PARA CREAR ARCHIVO .APK (ANDROID / TABLET)
+====================================================================
+
+POR QUE PWABUILDER DABA ERROR 403 EN LA URL DE PREVIEW:
+La URL de vista previa de AI Studio (*.run.app) esta protegida con
+inicio de sesion de Google, por lo que servidores externos como
+PWABuilder reciben un error 403 / pagina HTML de login al intentar
+descargar manifest.webmanifest o los iconos.
+
+Este paquete ya incluye la aplicacion web COMPILADA en la carpeta
+"www/" junto con todo lo necesario para generar tu APK real sin ese
+bloqueo. Elige cualquiera de los 3 metodos:
+
+--------------------------------------------------------------------
+METODO A (RECOMENDADO - GRATIS Y SIN INSTALAR ANDROID STUDIO)
+Compilar el .APK automaticamente en la nube con GitHub Actions:
+--------------------------------------------------------------------
+1. Descomprime este archivo ZIP en una carpeta.
+2. Crea un repositorio en GitHub (https://github.com/new), puede ser
+   privado o publico.
+3. Sube TODO el contenido de esta carpeta al repositorio (asegurate
+   de incluir la carpeta oculta ".github/workflows/crear-apk.yml").
+4. En tu repositorio de GitHub ve a la pestana "Actions".
+5. Selecciona "Compilar APK Android (INSUAMINCA)" y haz clic en
+   "Run workflow" (o espera ~2 minutos si se ejecuto al hacer push).
+6. Al finalizar, descarga el artefacto "INSUAMINCA-Medidas-Pesos-APK".
+   Dentro viene el archivo "app-debug.apk" listo para copiar e
+   instalar en tu tablet o celular Android.
+
+--------------------------------------------------------------------
+METODO B (EN TU PC CON WINDOWS / MAC / LINUX)
+--------------------------------------------------------------------
+Requisitos: Node.js 18+, Java JDK 17 y Android Studio (Android SDK).
+- En Windows: haz doble clic en "compilar-apk.bat"
+- En Mac/Linux: ejecuta "bash compilar-apk.sh"
+El archivo final se guardara en:
+  android/app/build/outputs/apk/debug/app-debug.apk
+
+--------------------------------------------------------------------
+METODO C (USAR PWABUILDER SIN ERROR 403)
+--------------------------------------------------------------------
+Si prefieres generar el APK desde https://www.pwabuilder.com:
+1. Toma SOLO la carpeta "www/" de este ZIP.
+2. Arrastrala a https://app.netlify.com/drop (o Vercel / Firebase
+   Hosting) para obtener una URL publica sin inicio de sesion.
+3. Pega esa nueva URL publica en PWABuilder -> Package for Stores ->
+   Android -> Download Package (ahora descargara el APK sin 403).
+====================================================================
